@@ -4,6 +4,12 @@
 
 var aws = require('aws-sdk');
 
+// this is used by the new analytics
+
+var APP_ID = 'amzn1.ask.skill.<my app id>';
+var VoiceInsights =require('voice-insights-sdk'),
+  VI_APP_TOKEN = '<my token>';
+
 'use strict';
 
 /**
@@ -296,6 +302,10 @@ function onIntent(intentRequest, session, callback) {
     var intent = intentRequest.intent,
         intentName = intentRequest.intent.name;
 
+    // initialize voice analytics 
+    console.log("initialize session");
+    VoiceInsights.initialize(session, VI_APP_TOKEN);
+
     // handle yes/no intent after the user has been prompted
     if (session.attributes && session.attributes.userPromptedToContinue) {
         delete session.attributes.userPromptedToContinue;
@@ -409,10 +419,17 @@ function getWelcomeResponse(session, callback) {
 
     db.putItem(params, function(err, data) {
         if (err) console.log(err); // an error occurred
-        else console.log("success" + data); // successful response
-    
-        callback(sessionAttributes,
-            buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
+        else {
+            console.log("success" + data); // successful response
+
+	    // temp code to test analytics
+	    console.log('analytics test - welcome message');
+	    VoiceInsights.track('WelcomeMessage', {}, speechOutput.speech, (err, res) => {
+	        console.log('voice insights logged' + JSON.stringify(res));
+                callback(sessionAttributes,
+                    buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
+            });
+        }
     });
 }
 
@@ -560,10 +577,15 @@ function handleAnswerRequest(intent, session, callback) {
 
             db.putItem(params, function(err, data) {
                 if (err) console.log(err); // an error occurred
-                else console.log("success" + data); // successful response
-                
-                callback(session.attributes,
-                    buildSpeechletResponse(CARD_TITLE, speechOutput, "", true));
+                else {
+		    console.log("success" + data); // successful response
+                    console.log('analytics test - question answered');
+                    VoiceInsights.track(intent.name, intent.slots, speechOutput.speech, (err, res) => {
+                        console.log('voice insights logged' + JSON.stringify(res));
+                        callback(session.attributes,
+                            buildSpeechletResponse(CARD_TITLE, speechOutput, "", true));
+		    });
+		}
             });
                 
         } else {
@@ -608,10 +630,17 @@ function handleAnswerRequest(intent, session, callback) {
 
             db.putItem(params, function(err, data) {
                 if (err) console.log(err); // an error occurred
-                else console.log("success" + data); // successful response
+        	else {
+		    console.log("success" + data); // successful response
 
-                callback(sessionAttributes,
-                    buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, false));
+                    // temp code to test analytics
+                    console.log('analytics test - question answered');
+                    VoiceInsights.track(intent.name, intent.slots, speechOutput.speech, (err, res) => {
+                        console.log('voice insights logged' + JSON.stringify(res));
+                        callback(sessionAttributes,
+                            buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, false));
+                    });
+		}
             });
         }
     }
