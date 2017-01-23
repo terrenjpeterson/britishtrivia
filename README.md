@@ -1,5 +1,6 @@
-British Trivia Skill
+#British Trivia Skill
 --------------------
+<center>![skill logo](media/logo-512x512.png)</center>
 
 media folder - logos used for skill publishing
 
