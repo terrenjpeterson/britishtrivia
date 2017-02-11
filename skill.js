@@ -6,9 +6,9 @@ var aws = require('aws-sdk');
 
 // this is used by the new analytics
 
-var APP_ID = 'amzn1.ask.skill.<my app id>';
+var APP_ID = 'amzn1.ask.skill.c425d705-863e-4761-8951-e867067f4677';
 var VoiceInsights =require('voice-insights-sdk'),
-  VI_APP_TOKEN = '<my token>';
+  VI_APP_TOKEN = '551c5fc1-749b-32d6-8b7f-ceb8f9cf772e';
 
 'use strict';
 
@@ -380,7 +380,12 @@ function getWelcomeResponse(session, callback) {
     for (i = 0; i < ANSWER_COUNT; i++) {
         repromptText += (i+1).toString() + ". " + roundAnswers[i] + ". "
     }
+    var godSaveQueen = 'https://s3.amazonaws.com/britishtrivia/sounds/godSaveQueen.mp3';
     speechOutput += repromptText;
+    var audioOutput = "<speak>";
+        audioOutput = audioOutput + "<audio src=\"" + godSaveQueen + "\" />";
+        audioOutput = audioOutput + speechOutput;
+        audioOutput = audioOutput + "</speak>";
     sessionAttributes = {
         "speechOutput": repromptText,
         "repromptText": repromptText,
@@ -424,10 +429,11 @@ function getWelcomeResponse(session, callback) {
 
 	    // temp code to test analytics
 	    console.log('analytics test - welcome message');
-	    VoiceInsights.track('WelcomeMessage', {}, speechOutput.speech, (err, res) => {
+	    VoiceInsights.track('WelcomeMessage', {}, speechOutput, (err, res) => {
 	        console.log('voice insights logged' + JSON.stringify(res));
+	        
                 callback(sessionAttributes,
-                    buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
+                    buildAudioCardResponse(CARD_TITLE, audioOutput, 'Welcome', 'unionJack', repromptText, shouldEndSession));
             });
         }
     });
@@ -635,7 +641,7 @@ function handleAnswerRequest(intent, session, callback) {
 
                     // temp code to test analytics
                     console.log('analytics test - question answered');
-                    VoiceInsights.track(intent.name, intent.slots, speechOutput.speech, (err, res) => {
+                    VoiceInsights.track(intent.name, intent.slots, speechOutput, (err, res) => {
                         console.log('voice insights logged' + JSON.stringify(res));
                         callback(sessionAttributes,
                             buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, false));
@@ -734,5 +740,53 @@ function buildResponse(sessionAttributes, speechletResponse) {
         version: "1.0",
         sessionAttributes: sessionAttributes,
         response: speechletResponse
+    };
+}
+
+function buildAudioCardResponse(title, output, cardInfo, objectName, repromptText, shouldEndSession) {
+    var smallImagePath = "https://s3.amazonaws.com/britishtrivia/cards/" + objectName + "-small.PNG";
+    var largeImagePath = "https://s3.amazonaws.com/britishtrivia/cards/" + objectName + "-large.PNG";
+    return {
+        outputSpeech: {
+            type: "SSML",
+            ssml: output
+        },
+        card: {
+            type: "Standard",
+            title: title,
+            text: cardInfo,
+            image: {
+                smallImageUrl: smallImagePath,
+                largeImageUrl: largeImagePath
+            }
+        },
+        reprompt: {
+            outputSpeech: {
+                type: "PlainText",
+                text: repromptText
+            }
+        },
+        shouldEndSession: shouldEndSession
+    };
+}
+
+function buildAudioResponse(title, output, cardInfo, repromptText, shouldEndSession) {
+    return {
+        outputSpeech: {
+            type: "SSML",
+            ssml: output
+        },
+        card: {
+            type: "Simple",
+            title: title,
+            content: cardInfo
+        },
+        reprompt: {
+            outputSpeech: {
+                type: "PlainText",
+                text: repromptText
+            }
+        },
+        shouldEndSession: shouldEndSession
     };
 }
