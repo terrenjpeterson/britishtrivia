@@ -1,0 +1,23 @@
+{
+	"name": "british history trivia",
+	"version": "3.0.1",
+	"description": "This is an Alexa skill that provides trivia questions around british history.",
+	"author": "Terren Peterson <terrenjpeterson@gmail.com>",
+	"engines": {
+		"node": "4.3"
+	},
+	"keywords": [
+		"alexa",
+		"trivia",
+		"british history"
+	],
+	"main": "skill.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/terrenjpeterson/britishtriva.git"
+	},
+	"dependencies": {
+		"alexa-sdk": "^2.4.7",
+		"voice-insights-sdk": "^1.2.1"
+	}
+}
