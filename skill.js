@@ -233,7 +233,214 @@ var questions = [
             "Robert Devereux",
             "George Villiers"
         ]
-    }     
+    },
+    {
+        "What year did Roger Bannister become the first runner to do a mile in less than four minutes?": [
+            "1954",
+            "1913",
+            "1961",
+            "1967",
+            "1949"
+        ]
+    },
+    {
+        "What year did Mike Hawthorn became the first Briton to win the Formula One World Championship?": [
+            "1958",
+            "1962",
+            "1954",
+            "1970",
+            "1950"
+        ]
+    },
+    {
+        "What was the title of the early work of science fiction written by Margaret Cavendish?": [
+            "The Blazing World",
+            "Amazing Travels",
+            "The Road Forward",
+            "New World Order",
+            "The Change is Coming"
+        ]
+    },
+    {
+        "What novel was not written by Jane Austen?": [
+            "A Christmas Carol",
+            "Sense and Sensibility",
+            "Mansfield Park",
+            "Pride and Prejudice",
+            "Emma"
+        ]
+    },
+    {
+        "What year was Charles Dickens born?": [
+            "1812",
+            "1802",
+            "1792",
+            "1845",
+            "1833"
+        ]
+    },
+    {
+        "During a period of 57 days and nights starting the seventh of September 1940 how many times was London bombed?": [
+            "56",
+            "52",
+            "45",
+            "42",
+            "37"
+        ]
+    },
+    {
+        "Which leader was scheduled to retire in 1939 but continued to serve to lead the Royal Air Force through the Battle of Britain?": [
+            "Hugh Dowding",
+            "Winston Churchill",
+            "Frederick Pile",
+            "Owen Tudor Boyd",
+            "Sir Leslie Gossage"
+        ]
+    },
+    {
+        "How many people died in the Great Plague of the 17th century?": [
+            "100 thousand",
+            "50 thousand",
+            "20 thousand",
+            "10 thousand",
+            "five thousand"
+        ]
+    },
+    {
+        "What is the height of the St Pauls Cathedral?": [
+            "111 metres",
+            "99 metres",
+            "125 metres",
+            "102 metres",
+            "133 metres"
+        ]
+    },
+    {
+        "Who designed the red telephone box?": [
+            "Sir Giles Gilbert Scott",
+            "George Godwin",
+            "Charles Robert Cockerell",
+            "John Loughborough Pearson",
+            "Frank Gehry"
+        ]
+    },
+    {
+        "What is the second largest metropolitan area in the UK?": [
+            "Birmingham Area",
+            "Manchester Area",
+            "Leeds Bradford Area",
+        	"Liverpool Birkenhead Area",
+        	"Newcastle Sunderland Area"
+        ]
+    },
+    {
+        "Which historical figure is not associated with the Midlands Enlightenment?": [
+            "Adam Smith",
+            "James Watt",
+            "Joseph Priestley",
+            "Josiah Wedgwood", 
+            "James Keir"
+        ]
+    },
+    {
+        "Who was not one of the Seven Bishops of the Church of England that were imprisoned and tried in the 17th Century?": [
+            "Frederick Cornwallis",
+            "Thomas Ken",
+            "John Lake",
+            "William Lloyd",
+            "William Sancroft"
+        ]
+    },
+    {
+        "What was the population of Liverpool in middle of the 16th century?": [
+            "500",
+            "5000",
+            "10 thousand",
+            "20 thousand",
+            "50 thousand"
+        ]
+    },
+    {
+        "When was a seven metre high stone wall built around the Newcastle to protect it from Northern invaders?": [
+            "13th century",
+            "11th century",
+            "12th century",
+            "9th century",
+            "15th century"
+        ]
+    },
+    {
+        "What century was Chaucer born in?": [
+            "14th century",
+            "13th century",
+            "12th century",
+            "11th century",
+            "15th century"
+        ]
+    },
+    {
+        "What work was not written by Chaucer?": [
+            "Sir Gawain and the Green Knight",
+            "The Canterbury Tales",
+            "The House of Fame",
+            "The Complaint of Mars",
+            "The Legend of Good Women"
+        ]
+    },
+    {
+        "Where is Sherwood Forest located in?": [
+            "Nottinghamshire",
+            "Derbyshire",
+            "Leicestershire",
+            "Lincolnshire",
+            "Wales"
+        ]
+    },
+    {
+        "What year was composer Henry Purcell born?": [
+            "16 59",
+            "1721",
+            "1761",
+            "15 83",
+            "16 03"
+        ]
+    },
+    {
+        "What month of the year did the Titanic sink in?": [
+            "April",
+            "January",
+            "May",
+            "February",
+            "December"
+        ]
+    },
+    {
+        "What was the sequel to Alice in Wonderland written by Lewis Carroll?": [
+            "Through the Looking Glass",
+            "Jabberwocky",
+            "The Hunting of the Snark",
+            "Sylvie and Bruno",
+            "Practical Tortoise Raising"
+        ]
+    },
+    {
+        "What year did Queen Elizabeth II begin her reign?": [
+            "1952",
+            "1946",
+            "1956",
+            "1962",
+            "1965"
+        ]
+    },
+    {
+        "Who was the reigning British monarch when Queen Elizabeth II was born?": [
+            "King George V",
+            "King George VI",
+            "Queen Victoria",
+            "King Edward VII",
+            "King Edward VIII"
+        ]
+    }
 ];
 
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
@@ -359,7 +566,7 @@ function onSessionEnded(sessionEndedRequest, session) {
 
 var ANSWER_COUNT = 4;
 var GAME_LENGTH = 5;
-var CARD_TITLE = "British History Quiz";
+var CARD_TITLE = "Five Difficult Trivia Questions";
 
 function getWelcomeResponse(session, callback) {
     var sessionAttributes = {},
@@ -427,13 +634,12 @@ function getWelcomeResponse(session, callback) {
         else {
             console.log("success" + data); // successful response
 
-	    // temp code to test analytics
-	    console.log('analytics test - welcome message');
+	    // analytics tracking
 	    VoiceInsights.track('WelcomeMessage', {}, speechOutput, (err, res) => {
 	        console.log('voice insights logged' + JSON.stringify(res));
-	        
+	        var flagIcon = "unionJack";
                 callback(sessionAttributes,
-                    buildAudioCardResponse(CARD_TITLE, audioOutput, 'Welcome', 'unionJack', repromptText, shouldEndSession));
+                    buildAudioCardResponse(CARD_TITLE, audioOutput, repromptText, flagIcon, repromptText, shouldEndSession));
             });
         }
     });
